@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://vanillacss.com/vanilla.css">
+    <title>Universal Widget</title>
+  </head>
+  <body onload="load()">
+    <main>
+      <header>
+        <h1>Universal Widget</h1>
+      </header>
+      <h2>Quick start guide</h2>
+      <p>This page reads the content of the anchor <code>https://gsurrel.github.io/no-host-static-page#<b>payload</b></code>, decode it as a base64 payload, and replace this page's content with the result.</p>
+      <p>The anchor's content is read on page load. Changing it afterwards will not be taken into account.</p>
+      <h2>Zero trust</h2>
+      <p>Anything after the <code>#</code> character is <b>not</b> sent to the server, so you can add sensitive content. Please bear in mind that it does not hide the secret to people you share your page with!</p>
+      <h2>Example</h2>
+      <p>Click the following link and press F5 to see the result:</p>
+      <p><a href="#PGgxPkhlbGxvITwvaDE+">Example usage with the content <code>&lt;h1&gt;Hello!&lt;/h1&gt;</code></a>.</p>
+      <h2>Output</h2>
+      <p>Errors will be displayed below:</p>
+      <blockquote><pre id="log">No anchor found.</pre></blockquote>
+      <h2>Easy encoder</h2>
+      <p>Use the following field to paste your source-code and encode it to base 64.</p>
+      <button onclick="encode()">Encode to base64</button>
+      <blockquote><pre id="editor" style="white-space: pre-wrap; word-wrap: break-word;" contenteditable="true">Replace me with your source code!</pre></blockquote>
+      <script>
+// The encoding and decoding to/from Base 64 is taken from
+// https://developer.mozilla.org/en-US/docs/Glossary/Base64#solution_1_%E2%80%93_escaping_the_string_before_encoding_it
+
+function load() {
+  var log = document.getElementById("log");
+  try {
+    var hash = window.location.hash.substring(1);
+    if(hash == "") return;
+    log.textContent = "Anchor: " + hash;
+    var decoded = decodeURIComponent(escape(window.atob(hash)));
+    document.write(decoded);
+  } catch (error) {
+    log.textContent = error;
+  }
+}
+
+function encode() {
+  var editor = document.getElementById("editor");
+  editor.textContent = window.btoa(unescape(encodeURIComponent(editor.textContent)));
+}
+      </script>
+    </main>
+  </body>
+</html>
