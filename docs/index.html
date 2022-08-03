@@ -24,14 +24,15 @@
       <blockquote><pre id="log">No anchor found.</pre></blockquote>
       <h2>Easy encoder</h2>
       <p>Use the following field to paste your source-code and encode it to base 64.</p>
-      <button onclick="encode()">Encode to base64</button>
+      <button onclick="encode()">Copy link with anchor to clipboard!</button>
       <blockquote><pre id="editor" style="white-space: pre-wrap; word-wrap: break-word;" contenteditable="true">Replace me with your source code!</pre></blockquote>
       <script>
 // The encoding and decoding to/from Base 64 is taken from
 // https://developer.mozilla.org/en-US/docs/Glossary/Base64#solution_1_%E2%80%93_escaping_the_string_before_encoding_it
 
+var log = document.getElementById("log");
+
 function load() {
-  var log = document.getElementById("log");
   try {
     var hash = window.location.hash.substring(1);
     if(hash == "") return;
@@ -45,7 +46,14 @@ function load() {
 
 function encode() {
   var editor = document.getElementById("editor");
-  editor.textContent = window.btoa(unescape(encodeURIComponent(editor.textContent)));
+  var encoded = window.btoa(unescape(encodeURIComponent(editor.textContent)));
+  var url = window.location.origin + window.location.pathname + '#' + encoded;
+
+  navigator.clipboard.writeText(url).then(function() {
+    log.textContent = 'Copying to clipboard was successful!';
+  }, function(err) {
+    log.textContent = 'Could not copy text:\n' + encoded;
+  });
 }
       </script>
     </main>
