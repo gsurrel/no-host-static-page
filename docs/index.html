@@ -5,6 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://vanillacss.com/vanilla.css">
     <title>Universal Widget</title>
+    <style>
+      #editor {
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        max-height: 12cm;
+        font-size: initial;
+      }
+
+      #success {
+        opacity: 0;
+      }
+
+      .fadeout {
+        animation-duration: 0.8s;
+        animation-name: fadeout;
+      }
+
+      @keyframes fadeout {
+        from {
+          opacity: 100%;
+        }
+
+        to {
+          opacity: 0;
+        }
+      }
+    </style>
   </head>
   <body onload="load()">
     <main>
@@ -24,13 +51,14 @@
       <blockquote><pre id="log">No anchor found.</pre></blockquote>
       <h2>Easy encoder</h2>
       <p>Use the following field to paste your source-code and encode it to base 64.</p>
-      <button onclick="encode()">Copy link with anchor to clipboard!</button>
-      <blockquote><pre id="editor" style="white-space: pre-wrap; word-wrap: break-word; max-height: 12cm; font-size: initial;" contenteditable="true">Replace me with your source code!</pre></blockquote>
+      <button onclick="encode()">Copy page link to clipboard!</button> <span id="success">✅</span>
+      <blockquote><pre id="editor" contenteditable="true">Replace me with your source code!</pre></blockquote>
       <script>
 // The encoding and decoding to/from Base 64 is taken from
 // https://developer.mozilla.org/en-US/docs/Glossary/Base64#solution_1_%E2%80%93_escaping_the_string_before_encoding_it
 
 var log = document.getElementById("log");
+var checkmark = document.getElementById("success");
 
 function load() {
   try {
@@ -46,11 +74,16 @@ function load() {
 
 function encode() {
   var editor = document.getElementById("editor");
-  var encoded = window.btoa(unescape(encodeURIComponent(editor.textContent)));
+  var encoded = window.btoa(unescape(encodeURIComponent(editor.innerText)));
   var url = window.location.origin + window.location.pathname + '#' + encoded;
 
   navigator.clipboard.writeText(url).then(function() {
-    log.textContent = 'Copying to clipboard was successful!';
+    checkmark.className = "fadeout";
+    checkmark.getAnimations().map(anim => {
+      anim.cancel(); // It case it was already running
+      anim.play();
+      anim.onfinish = () => checkmark.className = "";
+  });
   }, function(err) {
     log.textContent = 'Could not copy text:\n' + encoded;
   });
